@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package api.v1.error;
+
+option go_package = "myblog/api/v1/error;error";
+
+import "errors/errors.proto";
+
+enum ErrorReson {
+	option (errors.default_code) = 500;
+	ARTICLE_NOT_FOUND = 0 [(errors.code) = 404];
+}
