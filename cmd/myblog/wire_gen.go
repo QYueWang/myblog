@@ -28,15 +28,15 @@ func wireApp(confServer *conf.Server, confData *conf.Data, logger log.Logger) (*
 	if err != nil {
 		return nil, nil, err
 	}
-	articleRepo := data.NewArticleRepo(dataData)
+	articleRepo := data.NewArticleRepo(dataData, logger)
 	articleUseCase := biz.NewArticleUseCase(articleRepo)
-	articleService := service.NewArticleService(articleUseCase)
-	commentRepo := data.NewCommentRepo(dataData)
+	articleService := service.NewArticleService(articleUseCase, logger)
+	commentRepo := data.NewCommentRepo(dataData, logger)
 	commentUseCase := biz.NewCommentUseCase(commentRepo)
-	commentService := service.NewCommentService(commentUseCase)
+	commentService := service.NewCommentService(commentUseCase, logger)
 	tagRepo := data.NewTagRepo(dataData)
 	tagUseCase := biz.NewTagUseCase(tagRepo)
-	tagService := service.NewTagService(tagUseCase)
+	tagService := service.NewTagService(tagUseCase, logger)
 	grpcServer := server.NewGRPCServer(confServer, articleService, commentService, tagService, logger)
 	httpServer := server.NewHTTPServer(confServer, articleService, commentService, tagService, logger)
 	app := newApp(logger, grpcServer, httpServer)
