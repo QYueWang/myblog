@@ -5,18 +5,22 @@ import (
 
 	pb "myblog/api/v1/comment"
 	"myblog/internal/biz"
+
+	"github.com/go-kratos/kratos/v2/log"
 )
 
 type CommentService struct {
-	us *biz.CommentUseCase
+	us  *biz.CommentUseCase
+	log *log.Helper
 	pb.UnimplementedCommentServiceServer
 }
 
-func NewCommentService(us *biz.CommentUseCase) *CommentService {
-	return &CommentService{us: us}
+func NewCommentService(us *biz.CommentUseCase, logger log.Logger) *CommentService {
+	return &CommentService{us: us, log: log.NewHelper(logger)}
 }
 
 func (s *CommentService) CreateComment(ctx context.Context, req *pb.CreateCommentRequest) (*pb.CreateCommentReply, error) {
+	s.log.Infof("Input data is:%v", req)
 	coments, err := s.us.CreateComment(ctx, &biz.Comment{
 		Name:    req.Content,
 		Content: req.Content,

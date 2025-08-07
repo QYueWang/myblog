@@ -5,22 +5,27 @@ import (
 
 	pb "myblog/api/v1/tag"
 	"myblog/internal/biz"
+
+	"github.com/go-kratos/kratos/v2/log"
 )
 
 type TagService struct {
-	uc *biz.TagUseCase
+	uc  *biz.TagUseCase
+	log *log.Helper
 	pb.UnimplementedTagServiceServer
 }
 
-func NewTagService(uc *biz.TagUseCase) *TagService {
-	return &TagService{uc: uc}
+func NewTagService(uc *biz.TagUseCase, logger log.Logger) *TagService {
+	return &TagService{uc: uc, log: log.NewHelper(logger)}
 }
 
 func (s *TagService) CreateTag(ctx context.Context, req *pb.CreateTagRequest) (*pb.CreateTagReply, error) {
+	s.log.Infof("Input data is:%v", req)
 	err := s.uc.CreateTag(ctx, req.Name)
 	return &pb.CreateTagReply{}, err
 }
 func (s *TagService) UpdateTag(ctx context.Context, req *pb.UpdateTagRequest) (*pb.UpdateTagReply, error) {
+	s.log.Infof("Input data is:%v", req)
 	err := s.uc.UpdateTag(ctx, req.Id, req.Name)
 	return &pb.UpdateTagReply{}, err
 }

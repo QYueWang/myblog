@@ -26,11 +26,13 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 	}
 	//执行数据迁移
 	if err := db.Schema.Create(context.Background()); err != nil {
-		log.NewHelper(logger).Info("failed creating schema resources")
+		logger.Log(log.LevelError, err)
 	}
 
 	cleanup := func() {
-		db.Close()
+		if err := db.Close(); err != nil {
+			logger.Log(log.LevelError, err)
+		}
 		log.NewHelper(logger).Info("closing the data resources")
 	}
 	return &Data{db: db}, cleanup, nil

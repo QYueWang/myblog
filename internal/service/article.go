@@ -5,18 +5,22 @@ import (
 
 	pb "myblog/api/v1/article"
 	"myblog/internal/biz"
+
+	"github.com/go-kratos/kratos/v2/log"
 )
 
 type ArticleService struct {
-	au *biz.ArticleUseCase
+	au  *biz.ArticleUseCase
+	log *log.Helper
 	pb.UnimplementedArticleServiceServer
 }
 
-func NewArticleService(au *biz.ArticleUseCase) *ArticleService {
-	return &ArticleService{au: au}
+func NewArticleService(au *biz.ArticleUseCase, logger log.Logger) *ArticleService {
+	return &ArticleService{au: au, log: log.NewHelper(logger)}
 }
 
 func (s *ArticleService) CreateArticle(ctx context.Context, req *pb.CreateArticleRequest) (*pb.CreateArticleReply, error) {
+	s.log.Infof("Input data is:%v", req)
 	err := s.au.CreateArticle(ctx, &biz.Article{
 		Title:   req.Title,
 		Content: req.Content,
@@ -25,6 +29,7 @@ func (s *ArticleService) CreateArticle(ctx context.Context, req *pb.CreateArticl
 	return &pb.CreateArticleReply{}, err
 }
 func (s *ArticleService) UpdateArticle(ctx context.Context, req *pb.UpdateArticleRequest) (*pb.UpdateArticleReply, error) {
+	s.log.Infof("Input data is:%v", req)
 	err := s.au.UpdateArticle(ctx, req.Id, &biz.Article{
 		Title:   req.Title,
 		Content: req.Content,
