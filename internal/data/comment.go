@@ -25,8 +25,8 @@ func (cr *CommentRepo) CreateComment(ctx context.Context, c *biz.Comment) ([]*bi
 		SetArticleID(c.Article).
 		Save(ctx)
 	if err1 != nil {
-		//可以不使用log.Helper,直接使用框架默认初始化好的log.DefaultLogger实例
-		log.DefaultLogger.Log(log.LevelError, "创建评论失败")
+		//可以不使用log.Helper,直接使用框架默认初始化好的log.DefaultLogger实例，keyvals奇数为标签，偶数为值
+		log.DefaultLogger.Log(log.LevelError, "result:", "创建评论失败")
 	}
 	//查询文章下的评论
 	comments := make([]*biz.Comment, 0)
