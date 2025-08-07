@@ -11,3 +11,8 @@ go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
 ```
 protoc --proto_path=. --proto_path=./third_party --go_out=paths=source_relative:. --go-errors_out=paths=source_relative:. .\api\v1\error\error.proto
 ```
+若go mod tidy导致go版本号变更，可以查看是哪个依赖导致版本号变更的，更改依赖版本，同时在VSCode中修改GOTOOLCHAIN为当前go版本号：
+```
+go list -m -f '{{if .GoVersion}}{{.Path}} => Go {{.GoVersion}}{{end}}' all
+```
+

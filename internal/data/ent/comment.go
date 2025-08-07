@@ -75,7 +75,7 @@ func (*Comment) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Comment fields.
-func (_m *Comment) assignValues(columns []string, values []any) error {
+func (c *Comment) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -85,47 +85,47 @@ func (_m *Comment) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
-				_m.ID = value.String
+				c.ID = value.String
 			}
 		case comment.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				_m.Name = value.String
+				c.Name = value.String
 			}
 		case comment.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field content", values[i])
 			} else if value.Valid {
-				_m.Content = value.String
+				c.Content = value.String
 			}
 		case comment.FieldCreateAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field create_at", values[i])
 			} else if value.Valid {
-				_m.CreateAt = value.Time
+				c.CreateAt = value.Time
 			}
 		case comment.FieldUpdateAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field update_at", values[i])
 			} else if value.Valid {
-				_m.UpdateAt = value.Time
+				c.UpdateAt = value.Time
 			}
 		case comment.FieldDeleteAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field delete_at", values[i])
 			} else if value.Valid {
-				_m.DeleteAt = value.Time
+				c.DeleteAt = value.Time
 			}
 		case comment.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field article_comments", values[i])
 			} else if value.Valid {
-				_m.article_comments = new(string)
-				*_m.article_comments = value.String
+				c.article_comments = new(string)
+				*c.article_comments = value.String
 			}
 		default:
-			_m.selectValues.Set(columns[i], values[i])
+			c.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -133,52 +133,52 @@ func (_m *Comment) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Comment.
 // This includes values selected through modifiers, order, etc.
-func (_m *Comment) Value(name string) (ent.Value, error) {
-	return _m.selectValues.Get(name)
+func (c *Comment) Value(name string) (ent.Value, error) {
+	return c.selectValues.Get(name)
 }
 
 // QueryArticle queries the "article" edge of the Comment entity.
-func (_m *Comment) QueryArticle() *ArticleQuery {
-	return NewCommentClient(_m.config).QueryArticle(_m)
+func (c *Comment) QueryArticle() *ArticleQuery {
+	return NewCommentClient(c.config).QueryArticle(c)
 }
 
 // Update returns a builder for updating this Comment.
 // Note that you need to call Comment.Unwrap() before calling this method if this Comment
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *Comment) Update() *CommentUpdateOne {
-	return NewCommentClient(_m.config).UpdateOne(_m)
+func (c *Comment) Update() *CommentUpdateOne {
+	return NewCommentClient(c.config).UpdateOne(c)
 }
 
 // Unwrap unwraps the Comment entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *Comment) Unwrap() *Comment {
-	_tx, ok := _m.config.driver.(*txDriver)
+func (c *Comment) Unwrap() *Comment {
+	_tx, ok := c.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Comment is not a transactional entity")
 	}
-	_m.config.driver = _tx.drv
-	return _m
+	c.config.driver = _tx.drv
+	return c
 }
 
 // String implements the fmt.Stringer.
-func (_m *Comment) String() string {
+func (c *Comment) String() string {
 	var builder strings.Builder
 	builder.WriteString("Comment(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", c.ID))
 	builder.WriteString("name=")
-	builder.WriteString(_m.Name)
+	builder.WriteString(c.Name)
 	builder.WriteString(", ")
 	builder.WriteString("content=")
-	builder.WriteString(_m.Content)
+	builder.WriteString(c.Content)
 	builder.WriteString(", ")
 	builder.WriteString("create_at=")
-	builder.WriteString(_m.CreateAt.Format(time.ANSIC))
+	builder.WriteString(c.CreateAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("update_at=")
-	builder.WriteString(_m.UpdateAt.Format(time.ANSIC))
+	builder.WriteString(c.UpdateAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("delete_at=")
-	builder.WriteString(_m.DeleteAt.Format(time.ANSIC))
+	builder.WriteString(c.DeleteAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

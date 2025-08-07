@@ -22,98 +22,98 @@ type CommentCreate struct {
 }
 
 // SetName sets the "name" field.
-func (_c *CommentCreate) SetName(v string) *CommentCreate {
-	_c.mutation.SetName(v)
-	return _c
+func (cc *CommentCreate) SetName(s string) *CommentCreate {
+	cc.mutation.SetName(s)
+	return cc
 }
 
 // SetContent sets the "content" field.
-func (_c *CommentCreate) SetContent(v string) *CommentCreate {
-	_c.mutation.SetContent(v)
-	return _c
+func (cc *CommentCreate) SetContent(s string) *CommentCreate {
+	cc.mutation.SetContent(s)
+	return cc
 }
 
 // SetCreateAt sets the "create_at" field.
-func (_c *CommentCreate) SetCreateAt(v time.Time) *CommentCreate {
-	_c.mutation.SetCreateAt(v)
-	return _c
+func (cc *CommentCreate) SetCreateAt(t time.Time) *CommentCreate {
+	cc.mutation.SetCreateAt(t)
+	return cc
 }
 
 // SetNillableCreateAt sets the "create_at" field if the given value is not nil.
-func (_c *CommentCreate) SetNillableCreateAt(v *time.Time) *CommentCreate {
-	if v != nil {
-		_c.SetCreateAt(*v)
+func (cc *CommentCreate) SetNillableCreateAt(t *time.Time) *CommentCreate {
+	if t != nil {
+		cc.SetCreateAt(*t)
 	}
-	return _c
+	return cc
 }
 
 // SetUpdateAt sets the "update_at" field.
-func (_c *CommentCreate) SetUpdateAt(v time.Time) *CommentCreate {
-	_c.mutation.SetUpdateAt(v)
-	return _c
+func (cc *CommentCreate) SetUpdateAt(t time.Time) *CommentCreate {
+	cc.mutation.SetUpdateAt(t)
+	return cc
 }
 
 // SetNillableUpdateAt sets the "update_at" field if the given value is not nil.
-func (_c *CommentCreate) SetNillableUpdateAt(v *time.Time) *CommentCreate {
-	if v != nil {
-		_c.SetUpdateAt(*v)
+func (cc *CommentCreate) SetNillableUpdateAt(t *time.Time) *CommentCreate {
+	if t != nil {
+		cc.SetUpdateAt(*t)
 	}
-	return _c
+	return cc
 }
 
 // SetDeleteAt sets the "delete_at" field.
-func (_c *CommentCreate) SetDeleteAt(v time.Time) *CommentCreate {
-	_c.mutation.SetDeleteAt(v)
-	return _c
+func (cc *CommentCreate) SetDeleteAt(t time.Time) *CommentCreate {
+	cc.mutation.SetDeleteAt(t)
+	return cc
 }
 
 // SetNillableDeleteAt sets the "delete_at" field if the given value is not nil.
-func (_c *CommentCreate) SetNillableDeleteAt(v *time.Time) *CommentCreate {
-	if v != nil {
-		_c.SetDeleteAt(*v)
+func (cc *CommentCreate) SetNillableDeleteAt(t *time.Time) *CommentCreate {
+	if t != nil {
+		cc.SetDeleteAt(*t)
 	}
-	return _c
+	return cc
 }
 
 // SetID sets the "id" field.
-func (_c *CommentCreate) SetID(v string) *CommentCreate {
-	_c.mutation.SetID(v)
-	return _c
+func (cc *CommentCreate) SetID(s string) *CommentCreate {
+	cc.mutation.SetID(s)
+	return cc
 }
 
 // SetArticleID sets the "article" edge to the Article entity by ID.
-func (_c *CommentCreate) SetArticleID(id string) *CommentCreate {
-	_c.mutation.SetArticleID(id)
-	return _c
+func (cc *CommentCreate) SetArticleID(id string) *CommentCreate {
+	cc.mutation.SetArticleID(id)
+	return cc
 }
 
 // SetNillableArticleID sets the "article" edge to the Article entity by ID if the given value is not nil.
-func (_c *CommentCreate) SetNillableArticleID(id *string) *CommentCreate {
+func (cc *CommentCreate) SetNillableArticleID(id *string) *CommentCreate {
 	if id != nil {
-		_c = _c.SetArticleID(*id)
+		cc = cc.SetArticleID(*id)
 	}
-	return _c
+	return cc
 }
 
 // SetArticle sets the "article" edge to the Article entity.
-func (_c *CommentCreate) SetArticle(v *Article) *CommentCreate {
-	return _c.SetArticleID(v.ID)
+func (cc *CommentCreate) SetArticle(a *Article) *CommentCreate {
+	return cc.SetArticleID(a.ID)
 }
 
 // Mutation returns the CommentMutation object of the builder.
-func (_c *CommentCreate) Mutation() *CommentMutation {
-	return _c.mutation
+func (cc *CommentCreate) Mutation() *CommentMutation {
+	return cc.mutation
 }
 
 // Save creates the Comment in the database.
-func (_c *CommentCreate) Save(ctx context.Context) (*Comment, error) {
-	_c.defaults()
-	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
+func (cc *CommentCreate) Save(ctx context.Context) (*Comment, error) {
+	cc.defaults()
+	return withHooks(ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (_c *CommentCreate) SaveX(ctx context.Context) *Comment {
-	v, err := _c.Save(ctx)
+func (cc *CommentCreate) SaveX(ctx context.Context) *Comment {
+	v, err := cc.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -121,60 +121,60 @@ func (_c *CommentCreate) SaveX(ctx context.Context) *Comment {
 }
 
 // Exec executes the query.
-func (_c *CommentCreate) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (cc *CommentCreate) Exec(ctx context.Context) error {
+	_, err := cc.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *CommentCreate) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (cc *CommentCreate) ExecX(ctx context.Context) {
+	if err := cc.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *CommentCreate) defaults() {
-	if _, ok := _c.mutation.CreateAt(); !ok {
+func (cc *CommentCreate) defaults() {
+	if _, ok := cc.mutation.CreateAt(); !ok {
 		v := comment.DefaultCreateAt
-		_c.mutation.SetCreateAt(v)
+		cc.mutation.SetCreateAt(v)
 	}
-	if _, ok := _c.mutation.UpdateAt(); !ok {
+	if _, ok := cc.mutation.UpdateAt(); !ok {
 		v := comment.DefaultUpdateAt
-		_c.mutation.SetUpdateAt(v)
+		cc.mutation.SetUpdateAt(v)
 	}
-	if _, ok := _c.mutation.DeleteAt(); !ok {
+	if _, ok := cc.mutation.DeleteAt(); !ok {
 		v := comment.DefaultDeleteAt
-		_c.mutation.SetDeleteAt(v)
+		cc.mutation.SetDeleteAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (_c *CommentCreate) check() error {
-	if _, ok := _c.mutation.Name(); !ok {
+func (cc *CommentCreate) check() error {
+	if _, ok := cc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Comment.name"`)}
 	}
-	if _, ok := _c.mutation.Content(); !ok {
+	if _, ok := cc.mutation.Content(); !ok {
 		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Comment.content"`)}
 	}
-	if _, ok := _c.mutation.CreateAt(); !ok {
+	if _, ok := cc.mutation.CreateAt(); !ok {
 		return &ValidationError{Name: "create_at", err: errors.New(`ent: missing required field "Comment.create_at"`)}
 	}
-	if _, ok := _c.mutation.UpdateAt(); !ok {
+	if _, ok := cc.mutation.UpdateAt(); !ok {
 		return &ValidationError{Name: "update_at", err: errors.New(`ent: missing required field "Comment.update_at"`)}
 	}
-	if _, ok := _c.mutation.DeleteAt(); !ok {
+	if _, ok := cc.mutation.DeleteAt(); !ok {
 		return &ValidationError{Name: "delete_at", err: errors.New(`ent: missing required field "Comment.delete_at"`)}
 	}
 	return nil
 }
 
-func (_c *CommentCreate) sqlSave(ctx context.Context) (*Comment, error) {
-	if err := _c.check(); err != nil {
+func (cc *CommentCreate) sqlSave(ctx context.Context) (*Comment, error) {
+	if err := cc.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := _c.createSpec()
-	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
+	_node, _spec := cc.createSpec()
+	if err := sqlgraph.CreateNode(ctx, cc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -187,41 +187,41 @@ func (_c *CommentCreate) sqlSave(ctx context.Context) (*Comment, error) {
 			return nil, fmt.Errorf("unexpected Comment.ID type: %T", _spec.ID.Value)
 		}
 	}
-	_c.mutation.id = &_node.ID
-	_c.mutation.done = true
+	cc.mutation.id = &_node.ID
+	cc.mutation.done = true
 	return _node, nil
 }
 
-func (_c *CommentCreate) createSpec() (*Comment, *sqlgraph.CreateSpec) {
+func (cc *CommentCreate) createSpec() (*Comment, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Comment{config: _c.config}
+		_node = &Comment{config: cc.config}
 		_spec = sqlgraph.NewCreateSpec(comment.Table, sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString))
 	)
-	if id, ok := _c.mutation.ID(); ok {
+	if id, ok := cc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := _c.mutation.Name(); ok {
+	if value, ok := cc.mutation.Name(); ok {
 		_spec.SetField(comment.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := _c.mutation.Content(); ok {
+	if value, ok := cc.mutation.Content(); ok {
 		_spec.SetField(comment.FieldContent, field.TypeString, value)
 		_node.Content = value
 	}
-	if value, ok := _c.mutation.CreateAt(); ok {
+	if value, ok := cc.mutation.CreateAt(); ok {
 		_spec.SetField(comment.FieldCreateAt, field.TypeTime, value)
 		_node.CreateAt = value
 	}
-	if value, ok := _c.mutation.UpdateAt(); ok {
+	if value, ok := cc.mutation.UpdateAt(); ok {
 		_spec.SetField(comment.FieldUpdateAt, field.TypeTime, value)
 		_node.UpdateAt = value
 	}
-	if value, ok := _c.mutation.DeleteAt(); ok {
+	if value, ok := cc.mutation.DeleteAt(); ok {
 		_spec.SetField(comment.FieldDeleteAt, field.TypeTime, value)
 		_node.DeleteAt = value
 	}
-	if nodes := _c.mutation.ArticleIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.ArticleIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -249,16 +249,16 @@ type CommentCreateBulk struct {
 }
 
 // Save creates the Comment entities in the database.
-func (_c *CommentCreateBulk) Save(ctx context.Context) ([]*Comment, error) {
-	if _c.err != nil {
-		return nil, _c.err
+func (ccb *CommentCreateBulk) Save(ctx context.Context) ([]*Comment, error) {
+	if ccb.err != nil {
+		return nil, ccb.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
-	nodes := make([]*Comment, len(_c.builders))
-	mutators := make([]Mutator, len(_c.builders))
-	for i := range _c.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
+	nodes := make([]*Comment, len(ccb.builders))
+	mutators := make([]Mutator, len(ccb.builders))
+	for i := range ccb.builders {
 		func(i int, root context.Context) {
-			builder := _c.builders[i]
+			builder := ccb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*CommentMutation)
@@ -272,11 +272,11 @@ func (_c *CommentCreateBulk) Save(ctx context.Context) ([]*Comment, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, ccb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, ccb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -296,7 +296,7 @@ func (_c *CommentCreateBulk) Save(ctx context.Context) ([]*Comment, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, ccb.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -304,8 +304,8 @@ func (_c *CommentCreateBulk) Save(ctx context.Context) ([]*Comment, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (_c *CommentCreateBulk) SaveX(ctx context.Context) []*Comment {
-	v, err := _c.Save(ctx)
+func (ccb *CommentCreateBulk) SaveX(ctx context.Context) []*Comment {
+	v, err := ccb.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -313,14 +313,14 @@ func (_c *CommentCreateBulk) SaveX(ctx context.Context) []*Comment {
 }
 
 // Exec executes the query.
-func (_c *CommentCreateBulk) Exec(ctx context.Context) error {
-	_, err := _c.Save(ctx)
+func (ccb *CommentCreateBulk) Exec(ctx context.Context) error {
+	_, err := ccb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_c *CommentCreateBulk) ExecX(ctx context.Context) {
-	if err := _c.Exec(ctx); err != nil {
+func (ccb *CommentCreateBulk) ExecX(ctx context.Context) {
+	if err := ccb.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

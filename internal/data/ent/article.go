@@ -80,7 +80,7 @@ func (*Article) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Article fields.
-func (_m *Article) assignValues(columns []string, values []any) error {
+func (a *Article) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -90,40 +90,40 @@ func (_m *Article) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
-				_m.ID = value.String
+				a.ID = value.String
 			}
 		case article.FieldTitle:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field title", values[i])
 			} else if value.Valid {
-				_m.Title = value.String
+				a.Title = value.String
 			}
 		case article.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field content", values[i])
 			} else if value.Valid {
-				_m.Content = value.String
+				a.Content = value.String
 			}
 		case article.FieldCreateAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field create_at", values[i])
 			} else if value.Valid {
-				_m.CreateAt = value.Time
+				a.CreateAt = value.Time
 			}
 		case article.FieldUpdateAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field update_at", values[i])
 			} else if value.Valid {
-				_m.UpdateAt = value.Time
+				a.UpdateAt = value.Time
 			}
 		case article.FieldDeleteAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field delete_at", values[i])
 			} else if value.Valid {
-				_m.DeleteAt = value.Time
+				a.DeleteAt = value.Time
 			}
 		default:
-			_m.selectValues.Set(columns[i], values[i])
+			a.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -131,57 +131,57 @@ func (_m *Article) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Article.
 // This includes values selected through modifiers, order, etc.
-func (_m *Article) Value(name string) (ent.Value, error) {
-	return _m.selectValues.Get(name)
+func (a *Article) Value(name string) (ent.Value, error) {
+	return a.selectValues.Get(name)
 }
 
 // QueryComments queries the "comments" edge of the Article entity.
-func (_m *Article) QueryComments() *CommentQuery {
-	return NewArticleClient(_m.config).QueryComments(_m)
+func (a *Article) QueryComments() *CommentQuery {
+	return NewArticleClient(a.config).QueryComments(a)
 }
 
 // QueryTags queries the "tags" edge of the Article entity.
-func (_m *Article) QueryTags() *TagQuery {
-	return NewArticleClient(_m.config).QueryTags(_m)
+func (a *Article) QueryTags() *TagQuery {
+	return NewArticleClient(a.config).QueryTags(a)
 }
 
 // Update returns a builder for updating this Article.
 // Note that you need to call Article.Unwrap() before calling this method if this Article
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *Article) Update() *ArticleUpdateOne {
-	return NewArticleClient(_m.config).UpdateOne(_m)
+func (a *Article) Update() *ArticleUpdateOne {
+	return NewArticleClient(a.config).UpdateOne(a)
 }
 
 // Unwrap unwraps the Article entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *Article) Unwrap() *Article {
-	_tx, ok := _m.config.driver.(*txDriver)
+func (a *Article) Unwrap() *Article {
+	_tx, ok := a.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Article is not a transactional entity")
 	}
-	_m.config.driver = _tx.drv
-	return _m
+	a.config.driver = _tx.drv
+	return a
 }
 
 // String implements the fmt.Stringer.
-func (_m *Article) String() string {
+func (a *Article) String() string {
 	var builder strings.Builder
 	builder.WriteString("Article(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", a.ID))
 	builder.WriteString("title=")
-	builder.WriteString(_m.Title)
+	builder.WriteString(a.Title)
 	builder.WriteString(", ")
 	builder.WriteString("content=")
-	builder.WriteString(_m.Content)
+	builder.WriteString(a.Content)
 	builder.WriteString(", ")
 	builder.WriteString("create_at=")
-	builder.WriteString(_m.CreateAt.Format(time.ANSIC))
+	builder.WriteString(a.CreateAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("update_at=")
-	builder.WriteString(_m.UpdateAt.Format(time.ANSIC))
+	builder.WriteString(a.UpdateAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("delete_at=")
-	builder.WriteString(_m.DeleteAt.Format(time.ANSIC))
+	builder.WriteString(a.DeleteAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

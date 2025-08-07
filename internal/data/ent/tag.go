@@ -67,7 +67,7 @@ func (*Tag) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Tag fields.
-func (_m *Tag) assignValues(columns []string, values []any) error {
+func (t *Tag) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -77,34 +77,34 @@ func (_m *Tag) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
-				_m.ID = value.String
+				t.ID = value.String
 			}
 		case tag.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				_m.Name = value.String
+				t.Name = value.String
 			}
 		case tag.FieldCreateAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field create_at", values[i])
 			} else if value.Valid {
-				_m.CreateAt = value.Time
+				t.CreateAt = value.Time
 			}
 		case tag.FieldUpdateAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field update_at", values[i])
 			} else if value.Valid {
-				_m.UpdateAt = value.Time
+				t.UpdateAt = value.Time
 			}
 		case tag.FieldDeleteAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field delete_at", values[i])
 			} else if value.Valid {
-				_m.DeleteAt = value.Time
+				t.DeleteAt = value.Time
 			}
 		default:
-			_m.selectValues.Set(columns[i], values[i])
+			t.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -112,49 +112,49 @@ func (_m *Tag) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Tag.
 // This includes values selected through modifiers, order, etc.
-func (_m *Tag) Value(name string) (ent.Value, error) {
-	return _m.selectValues.Get(name)
+func (t *Tag) Value(name string) (ent.Value, error) {
+	return t.selectValues.Get(name)
 }
 
 // QueryArticles queries the "articles" edge of the Tag entity.
-func (_m *Tag) QueryArticles() *ArticleQuery {
-	return NewTagClient(_m.config).QueryArticles(_m)
+func (t *Tag) QueryArticles() *ArticleQuery {
+	return NewTagClient(t.config).QueryArticles(t)
 }
 
 // Update returns a builder for updating this Tag.
 // Note that you need to call Tag.Unwrap() before calling this method if this Tag
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *Tag) Update() *TagUpdateOne {
-	return NewTagClient(_m.config).UpdateOne(_m)
+func (t *Tag) Update() *TagUpdateOne {
+	return NewTagClient(t.config).UpdateOne(t)
 }
 
 // Unwrap unwraps the Tag entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *Tag) Unwrap() *Tag {
-	_tx, ok := _m.config.driver.(*txDriver)
+func (t *Tag) Unwrap() *Tag {
+	_tx, ok := t.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Tag is not a transactional entity")
 	}
-	_m.config.driver = _tx.drv
-	return _m
+	t.config.driver = _tx.drv
+	return t
 }
 
 // String implements the fmt.Stringer.
-func (_m *Tag) String() string {
+func (t *Tag) String() string {
 	var builder strings.Builder
 	builder.WriteString("Tag(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", t.ID))
 	builder.WriteString("name=")
-	builder.WriteString(_m.Name)
+	builder.WriteString(t.Name)
 	builder.WriteString(", ")
 	builder.WriteString("create_at=")
-	builder.WriteString(_m.CreateAt.Format(time.ANSIC))
+	builder.WriteString(t.CreateAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("update_at=")
-	builder.WriteString(_m.UpdateAt.Format(time.ANSIC))
+	builder.WriteString(t.UpdateAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("delete_at=")
-	builder.WriteString(_m.DeleteAt.Format(time.ANSIC))
+	builder.WriteString(t.DeleteAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }
