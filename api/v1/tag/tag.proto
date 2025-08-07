@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package api.v1.tag;
+
+option go_package = "myblog/api/v1/tag;tag";
+
+import "google/api/annotations.proto";
+
+service TagService {
+	rpc CreateTag (CreateTagRequest) returns (CreateTagReply) {
+		option (google.api.http) = {
+			post: "/api/tag"
+			body: "*"
+		};
+	};
+	rpc UpdateTag (UpdateTagRequest) returns (UpdateTagReply) {
+		option (google.api.http) = {
+			put: "/api/tag/{id}"
+			body: "*"
+		};
+	};
+	rpc DeleteTag (DeleteTagRequest) returns (DeleteTagReply) {
+		option (google.api.http) = {
+			delete: "/api/tag/{id}"
+		};
+	};
+	rpc GetTag (GetTagRequest) returns (GetTagReply) {
+		option (google.api.http) = {
+			get: "/api/tag/{article}"
+		};
+	};
+	rpc ListTag (ListTagRequest) returns (ListTagReply) {
+		option (google.api.http) = {
+			get: "/api/tags"
+		};
+	};
+}
+
+message Tag {
+	string id = 1;
+	string name = 2;
+}
+
+message CreateTagRequest {
+	string name = 1;
+}
+message CreateTagReply {}
+
+message UpdateTagRequest {
+	string id = 1;
+	string name = 2;
+}
+message UpdateTagReply {}
+
+message DeleteTagRequest {
+	string id = 1;
+}
+message DeleteTagReply {}
+
+message GetTagRequest {
+	string article = 1;
+}
+message GetTagReply {
+	repeated Tag tags = 1;
+}
+
+message ListTagRequest {}
+message ListTagReply {
+	repeated Tag tags = 1;
+}

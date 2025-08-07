@@ -1,0 +1,36 @@
+package server
+
+import (
+	ar "myblog/api/v1/article"
+	co "myblog/api/v1/comment"
+	tg "myblog/api/v1/tag"
+	"myblog/internal/conf"
+	"myblog/internal/service"
+
+	"github.com/go-kratos/kratos/v2/log"
+	"github.com/go-kratos/kratos/v2/middleware/recovery"
+	"github.com/go-kratos/kratos/v2/transport/grpc"
+)
+
+// NewGRPCServer new a gRPC server.
+func NewGRPCServer(c *conf.Server, article *service.ArticleService, comment *service.CommentService, tag *service.TagService, logger log.Logger) *grpc.Server {
+	var opts = []grpc.ServerOption{
+		grpc.Middleware(
+			recovery.Recovery(),
+		),
+	}
+	if c.Grpc.Network != "" {
+		opts = append(opts, grpc.Network(c.Grpc.Network))
+	}
+	if c.Grpc.Addr != "" {
+		opts = append(opts, grpc.Address(c.Grpc.Addr))
+	}
+	if c.Grpc.Timeout != nil {
+		opts = append(opts, grpc.Timeout(c.Grpc.Timeout.AsDuration()))
+	}
+	srv := grpc.NewServer(opts...)
+	ar.RegisterArticleServiceServer(srv, article)
+	co.RegisterCommentServiceServer(srv, comment)
+	tg.RegisterTagServiceServer(srv, tag)
+	return srv
+}

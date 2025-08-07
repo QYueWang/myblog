@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package api.v1.comment;
+
+option go_package = "myblog/api/v1/comment;comment";
+
+import "google/api/annotations.proto";
+
+service CommentService {
+	rpc CreateComment (CreateCommentRequest) returns (CreateCommentReply) {
+		option (google.api.http) = {
+			post: "/api/comment"
+			body: "*"
+		};
+	};
+	rpc DeleteComment (DeleteCommentRequest) returns (DeleteCommentReply) {
+		option (google.api.http) = {
+			delete: "/api/comment/{id}"
+		};
+	};
+	rpc GetComments (GetCommentRequest) returns (GetCommentReply) {
+		option (google.api.http) = {
+			get: "/api/comment/{article}"
+		};
+	};
+}
+
+message Comment {
+	string id = 1;
+	string name = 2;
+	string content = 3;
+}
+
+message CreateCommentRequest {
+	string content = 1;
+	string article = 2;
+}
+message CreateCommentReply {
+	repeated Comment comments = 1;
+}
+
+message DeleteCommentRequest {
+	string id = 1;
+}
+message DeleteCommentReply {
+	repeated Comment comments = 1;
+}
+
+message GetCommentRequest {
+	string article = 1;
+}
+message GetCommentReply {
+	repeated Comment comments = 1;
+}

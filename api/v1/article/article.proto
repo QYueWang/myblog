@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package api.v1.article;
+
+option go_package = "myblog/api/v1/article;article";
+
+import "google/api/annotations.proto";
+
+service ArticleService {
+	rpc CreateArticle (CreateArticleRequest) returns (CreateArticleReply) {
+		option (google.api.http) = {
+			post: "/api/article"
+			body: "*"
+		};
+	};
+	rpc UpdateArticle (UpdateArticleRequest) returns (UpdateArticleReply) {
+		option (google.api.http) = {
+			put: "/api/article/{id}"
+			body: "*"
+		};
+	};
+	rpc DeleteArticle (DeleteArticleRequest) returns (DeleteArticleReply) {
+		option (google.api.http) = {
+			delete: "/api/article/{id}"
+		};
+	};
+	rpc GetArticle (GetArticleRequest) returns (GetArticleReply) {
+		option (google.api.http) = {
+			get: "/api/article/{id}"
+		};
+	};
+	rpc ListArticle (ListArticleRequest) returns (ListArticleReply) {
+		option (google.api.http) = {
+			get: "/api/articles"
+		};
+	};
+}
+
+message Article {
+	string id = 1;
+	string title = 2;
+	string content = 3;
+}
+
+message CreateArticleRequest {
+	string title = 1;
+	string content = 2;
+}
+message CreateArticleReply {
+	Article article = 1;
+}
+
+message UpdateArticleRequest {
+	string id = 1;
+	string title = 2;
+	string content = 3;
+}
+message UpdateArticleReply {
+	Article article = 1;
+}
+
+message DeleteArticleRequest {
+	string id = 1;
+}
+message DeleteArticleReply {}
+
+message GetArticleRequest {
+	string id = 1;
+}
+message GetArticleReply {
+	Article article = 1;
+}
+
+message ListArticleRequest {}
+message ListArticleReply {
+	repeated Article articles = 1;
+}
