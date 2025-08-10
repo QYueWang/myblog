@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"myblog/internal/data/ent/article"
 	"myblog/internal/data/ent/comment"
+	"myblog/internal/data/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -98,6 +99,25 @@ func (cc *CommentCreate) SetNillableArticleID(id *string) *CommentCreate {
 // SetArticle sets the "article" edge to the Article entity.
 func (cc *CommentCreate) SetArticle(a *Article) *CommentCreate {
 	return cc.SetArticleID(a.ID)
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (cc *CommentCreate) SetUserID(id int) *CommentCreate {
+	cc.mutation.SetUserID(id)
+	return cc
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (cc *CommentCreate) SetNillableUserID(id *int) *CommentCreate {
+	if id != nil {
+		cc = cc.SetUserID(*id)
+	}
+	return cc
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (cc *CommentCreate) SetUser(u *User) *CommentCreate {
+	return cc.SetUserID(u.ID)
 }
 
 // Mutation returns the CommentMutation object of the builder.
@@ -236,6 +256,23 @@ func (cc *CommentCreate) createSpec() (*Comment, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.article_comments = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   comment.UserTable,
+			Columns: []string{comment.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_comments = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

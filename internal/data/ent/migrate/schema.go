@@ -16,12 +16,21 @@ var (
 		{Name: "create_at", Type: field.TypeTime},
 		{Name: "update_at", Type: field.TypeTime},
 		{Name: "delete_at", Type: field.TypeTime},
+		{Name: "user_articles", Type: field.TypeInt, Nullable: true},
 	}
 	// ArticlesTable holds the schema information for the "articles" table.
 	ArticlesTable = &schema.Table{
 		Name:       "articles",
 		Columns:    ArticlesColumns,
 		PrimaryKey: []*schema.Column{ArticlesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "articles_users_articles",
+				Columns:    []*schema.Column{ArticlesColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 	}
 	// CommentsColumns holds the columns for the "comments" table.
 	CommentsColumns = []*schema.Column{
@@ -32,6 +41,7 @@ var (
 		{Name: "update_at", Type: field.TypeTime},
 		{Name: "delete_at", Type: field.TypeTime},
 		{Name: "article_comments", Type: field.TypeString, Nullable: true},
+		{Name: "user_comments", Type: field.TypeInt, Nullable: true},
 	}
 	// CommentsTable holds the schema information for the "comments" table.
 	CommentsTable = &schema.Table{
@@ -43,6 +53,12 @@ var (
 				Symbol:     "comments_articles_comments",
 				Columns:    []*schema.Column{CommentsColumns[6]},
 				RefColumns: []*schema.Column{ArticlesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "comments_users_comments",
+				Columns:    []*schema.Column{CommentsColumns[7]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -60,6 +76,23 @@ var (
 		Name:       "tags",
 		Columns:    TagsColumns,
 		PrimaryKey: []*schema.Column{TagsColumns[0]},
+	}
+	// UsersColumns holds the columns for the "users" table.
+	UsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "account", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString},
+		{Name: "password", Type: field.TypeString},
+		{Name: "create_at", Type: field.TypeTime},
+		{Name: "update_at", Type: field.TypeTime},
+		{Name: "delete_at", Type: field.TypeTime},
+	}
+	// UsersTable holds the schema information for the "users" table.
+	UsersTable = &schema.Table{
+		Name:       "users",
+		Columns:    UsersColumns,
+		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
 	// ArticleTagsColumns holds the columns for the "article_tags" table.
 	ArticleTagsColumns = []*schema.Column{
@@ -91,12 +124,15 @@ var (
 		ArticlesTable,
 		CommentsTable,
 		TagsTable,
+		UsersTable,
 		ArticleTagsTable,
 	}
 )
 
 func init() {
+	ArticlesTable.ForeignKeys[0].RefTable = UsersTable
 	CommentsTable.ForeignKeys[0].RefTable = ArticlesTable
+	CommentsTable.ForeignKeys[1].RefTable = UsersTable
 	ArticleTagsTable.ForeignKeys[0].RefTable = ArticlesTable
 	ArticleTagsTable.ForeignKeys[1].RefTable = TagsTable
 }

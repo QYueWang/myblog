@@ -3,19 +3,19 @@
 
 openapi: 3.0.3
 info:
-    title: TagService API
+    title: UserService API
     version: 0.0.1
 paths:
-    /api/tag:
+    /api/login:
         post:
             tags:
-                - TagService
-            operationId: TagService_CreateTag
+                - UserService
+            operationId: UserService_Login
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/CreateTagRequest'
+                            $ref: '#/components/schemas/LoginRequest'
                 required: true
             responses:
                 "200":
@@ -23,20 +23,44 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/CreateTagReply'
+                                $ref: '#/components/schemas/LoginReply'
                 default:
                     description: Default error response
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/tag/{article}:
+    /api/user:
+        post:
+            tags:
+                - UserService
+            operationId: UserService_CreateUser
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateUserRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateUserReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/user/{account}:
         get:
             tags:
-                - TagService
-            operationId: TagService_GetTag
+                - UserService
+            operationId: UserService_GetUser
             parameters:
-                - name: article
+                - name: account
                   in: path
                   required: true
                   schema:
@@ -47,20 +71,19 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/GetTagReply'
+                                $ref: '#/components/schemas/GetUserReply'
                 default:
                     description: Default error response
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/tag/{id}:
         put:
             tags:
-                - TagService
-            operationId: TagService_UpdateTag
+                - UserService
+            operationId: UserService_UpdateUser
             parameters:
-                - name: id
+                - name: account
                   in: path
                   required: true
                   schema:
@@ -69,7 +92,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/UpdateTagRequest'
+                            $ref: '#/components/schemas/UpdateUserRequest'
                 required: true
             responses:
                 "200":
@@ -77,7 +100,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/UpdateTagReply'
+                                $ref: '#/components/schemas/UpdateUserReply'
                 default:
                     description: Default error response
                     content:
@@ -86,10 +109,10 @@ paths:
                                 $ref: '#/components/schemas/Status'
         delete:
             tags:
-                - TagService
-            operationId: TagService_DeleteTag
+                - UserService
+            operationId: UserService_DeleteUser
             parameters:
-                - name: id
+                - name: account
                   in: path
                   required: true
                   schema:
@@ -100,25 +123,25 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/DeleteTagReply'
+                                $ref: '#/components/schemas/DeleteUserReply'
                 default:
                     description: Default error response
                     content:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Status'
-    /api/tags:
+    /api/users:
         get:
             tags:
-                - TagService
-            operationId: TagService_ListTag
+                - UserService
+            operationId: UserService_ListUser
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/ListTagReply'
+                                $ref: '#/components/schemas/ListUserReply'
                 default:
                     description: Default error response
                     content:
@@ -127,24 +150,26 @@ paths:
                                 $ref: '#/components/schemas/Status'
 components:
     schemas:
-        CreateTagReply:
+        CreateUserReply:
             type: object
             properties: {}
-        CreateTagRequest:
+        CreateUserRequest:
             type: object
             properties:
-                name:
+                userName:
                     type: string
-        DeleteTagReply:
+                email:
+                    type: string
+                password:
+                    type: string
+        DeleteUserReply:
             type: object
             properties: {}
-        GetTagReply:
+        GetUserReply:
             type: object
             properties:
-                tags:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/Tag'
+                user:
+                    $ref: '#/components/schemas/User'
         GoogleProtobufAny:
             type: object
             properties:
@@ -153,13 +178,25 @@ components:
                     description: The type of the serialized message.
             additionalProperties: true
             description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-        ListTagReply:
+        ListUserReply:
             type: object
             properties:
-                tags:
+                data:
                     type: array
                     items:
-                        $ref: '#/components/schemas/Tag'
+                        $ref: '#/components/schemas/User'
+        LoginReply:
+            type: object
+            properties:
+                token:
+                    type: string
+        LoginRequest:
+            type: object
+            properties:
+                account:
+                    type: string
+                password:
+                    type: string
         Status:
             type: object
             properties:
@@ -176,22 +213,26 @@ components:
                         $ref: '#/components/schemas/GoogleProtobufAny'
                     description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
             description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
-        Tag:
-            type: object
-            properties:
-                id:
-                    type: string
-                name:
-                    type: string
-        UpdateTagReply:
+        UpdateUserReply:
             type: object
             properties: {}
-        UpdateTagRequest:
+        UpdateUserRequest:
             type: object
             properties:
-                id:
+                account:
                     type: string
-                name:
+                userName:
+                    type: string
+                email:
+                    type: string
+        User:
+            type: object
+            properties:
+                account:
+                    type: string
+                userName:
+                    type: string
+                email:
                     type: string
 tags:
-    - name: TagService
+    - name: UserService

@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"myblog/internal/data/ent/article"
+	"myblog/internal/data/ent/user"
 	"strings"
 	"time"
 
@@ -29,8 +30,9 @@ type Article struct {
 	DeleteAt time.Time `json:"delete_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ArticleQuery when eager-loading is set.
-	Edges        ArticleEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges         ArticleEdges `json:"edges"`
+	user_articles *int
+	selectValues  sql.SelectValues
 }
 
 // ArticleEdges holds the relations/edges for other nodes in the graph.
@@ -39,9 +41,11 @@ type ArticleEdges struct {
 	Comments []*Comment `json:"comments,omitempty"`
 	// Tags holds the value of the tags edge.
 	Tags []*Tag `json:"tags,omitempty"`
+	// User holds the value of the user edge.
+	User *User `json:"user,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // CommentsOrErr returns the Comments value or an error if the edge
@@ -62,6 +66,17 @@ func (e ArticleEdges) TagsOrErr() ([]*Tag, error) {
 	return nil, &NotLoadedError{edge: "tags"}
 }
 
+// UserOrErr returns the User value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ArticleEdges) UserOrErr() (*User, error) {
+	if e.User != nil {
+		return e.User, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: user.Label}
+	}
+	return nil, &NotLoadedError{edge: "user"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Article) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -71,6 +86,8 @@ func (*Article) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case article.FieldCreateAt, article.FieldUpdateAt, article.FieldDeleteAt:
 			values[i] = new(sql.NullTime)
+		case article.ForeignKeys[0]: // user_articles
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -122,6 +139,13 @@ func (a *Article) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.DeleteAt = value.Time
 			}
+		case article.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field user_articles", value)
+			} else if value.Valid {
+				a.user_articles = new(int)
+				*a.user_articles = int(value.Int64)
+			}
 		default:
 			a.selectValues.Set(columns[i], values[i])
 		}
@@ -143,6 +167,11 @@ func (a *Article) QueryComments() *CommentQuery {
 // QueryTags queries the "tags" edge of the Article entity.
 func (a *Article) QueryTags() *TagQuery {
 	return NewArticleClient(a.config).QueryTags(a)
+}
+
+// QueryUser queries the "user" edge of the Article entity.
+func (a *Article) QueryUser() *UserQuery {
+	return NewArticleClient(a.config).QueryUser(a)
 }
 
 // Update returns a builder for updating this Article.

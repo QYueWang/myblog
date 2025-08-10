@@ -11,7 +11,7 @@ import (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewArticleRepo, NewCommentRepo, NewTagRepo)
+var ProviderSet = wire.NewSet(NewData, NewArticleRepo, NewCommentRepo, NewTagRepo, NewUserRepo)
 
 // Data
 type Data struct {
@@ -25,8 +25,19 @@ func NewData(c *conf.Data, logger log.Logger) (*Data, func(), error) {
 		logger.Log(log.LevelError, err)
 	}
 	//执行数据迁移
+	log.Debug("执行数据迁移")
 	if err := db.Schema.Create(context.Background()); err != nil {
 		logger.Log(log.LevelError, err)
+	}
+
+	//初始化Admin数据
+	if _, err := db.User.Create().
+		SetAccount("admin").
+		SetName("Administrator").
+		SetEmail("admin@mail.com").
+		SetPassword("admin").
+		Save(context.Background()); err != nil {
+		log.Log(log.LevelError, err)
 	}
 
 	cleanup := func() {

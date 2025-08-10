@@ -9,6 +9,7 @@ import (
 	"myblog/internal/data/ent/article"
 	"myblog/internal/data/ent/comment"
 	"myblog/internal/data/ent/tag"
+	"myblog/internal/data/ent/user"
 	"reflect"
 	"sync"
 
@@ -78,6 +79,7 @@ func checkColumn(table, column string) error {
 			article.Table: article.ValidColumn,
 			comment.Table: comment.ValidColumn,
 			tag.Table:     tag.ValidColumn,
+			user.Table:    user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

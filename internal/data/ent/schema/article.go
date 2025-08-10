@@ -30,5 +30,6 @@ func (Article) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("comments", Comment.Type),
 		edge.To("tags", Tag.Type),
+		edge.From("user", User.Type).Ref("articles").Unique(),
 	}
 }

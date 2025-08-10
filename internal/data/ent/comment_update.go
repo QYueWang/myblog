@@ -9,6 +9,7 @@ import (
 	"myblog/internal/data/ent/article"
 	"myblog/internal/data/ent/comment"
 	"myblog/internal/data/ent/predicate"
+	"myblog/internal/data/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -104,6 +105,25 @@ func (cu *CommentUpdate) SetArticle(a *Article) *CommentUpdate {
 	return cu.SetArticleID(a.ID)
 }
 
+// SetUserID sets the "user" edge to the User entity by ID.
+func (cu *CommentUpdate) SetUserID(id int) *CommentUpdate {
+	cu.mutation.SetUserID(id)
+	return cu
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (cu *CommentUpdate) SetNillableUserID(id *int) *CommentUpdate {
+	if id != nil {
+		cu = cu.SetUserID(*id)
+	}
+	return cu
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (cu *CommentUpdate) SetUser(u *User) *CommentUpdate {
+	return cu.SetUserID(u.ID)
+}
+
 // Mutation returns the CommentMutation object of the builder.
 func (cu *CommentUpdate) Mutation() *CommentMutation {
 	return cu.mutation
@@ -112,6 +132,12 @@ func (cu *CommentUpdate) Mutation() *CommentMutation {
 // ClearArticle clears the "article" edge to the Article entity.
 func (cu *CommentUpdate) ClearArticle() *CommentUpdate {
 	cu.mutation.ClearArticle()
+	return cu
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (cu *CommentUpdate) ClearUser() *CommentUpdate {
+	cu.mutation.ClearUser()
 	return cu
 }
 
@@ -185,6 +211,35 @@ func (cu *CommentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(article.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cu.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   comment.UserTable,
+			Columns: []string{comment.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   comment.UserTable,
+			Columns: []string{comment.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -287,6 +342,25 @@ func (cuo *CommentUpdateOne) SetArticle(a *Article) *CommentUpdateOne {
 	return cuo.SetArticleID(a.ID)
 }
 
+// SetUserID sets the "user" edge to the User entity by ID.
+func (cuo *CommentUpdateOne) SetUserID(id int) *CommentUpdateOne {
+	cuo.mutation.SetUserID(id)
+	return cuo
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (cuo *CommentUpdateOne) SetNillableUserID(id *int) *CommentUpdateOne {
+	if id != nil {
+		cuo = cuo.SetUserID(*id)
+	}
+	return cuo
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (cuo *CommentUpdateOne) SetUser(u *User) *CommentUpdateOne {
+	return cuo.SetUserID(u.ID)
+}
+
 // Mutation returns the CommentMutation object of the builder.
 func (cuo *CommentUpdateOne) Mutation() *CommentMutation {
 	return cuo.mutation
@@ -295,6 +369,12 @@ func (cuo *CommentUpdateOne) Mutation() *CommentMutation {
 // ClearArticle clears the "article" edge to the Article entity.
 func (cuo *CommentUpdateOne) ClearArticle() *CommentUpdateOne {
 	cuo.mutation.ClearArticle()
+	return cuo
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (cuo *CommentUpdateOne) ClearUser() *CommentUpdateOne {
+	cuo.mutation.ClearUser()
 	return cuo
 }
 
@@ -398,6 +478,35 @@ func (cuo *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(article.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   comment.UserTable,
+			Columns: []string{comment.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   comment.UserTable,
+			Columns: []string{comment.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

@@ -11,6 +11,7 @@ import (
 	"myblog/internal/data/ent/comment"
 	"myblog/internal/data/ent/predicate"
 	"myblog/internal/data/ent/tag"
+	"myblog/internal/data/ent/user"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -27,6 +28,8 @@ type ArticleQuery struct {
 	predicates   []predicate.Article
 	withComments *CommentQuery
 	withTags     *TagQuery
+	withUser     *UserQuery
+	withFKs      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -100,6 +103,28 @@ func (aq *ArticleQuery) QueryTags() *TagQuery {
 			sqlgraph.From(article.Table, article.FieldID, selector),
 			sqlgraph.To(tag.Table, tag.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, article.TagsTable, article.TagsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryUser chains the current query on the "user" edge.
+func (aq *ArticleQuery) QueryUser() *UserQuery {
+	query := (&UserClient{config: aq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(article.Table, article.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, article.UserTable, article.UserColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -301,6 +326,7 @@ func (aq *ArticleQuery) Clone() *ArticleQuery {
 		predicates:   append([]predicate.Article{}, aq.predicates...),
 		withComments: aq.withComments.Clone(),
 		withTags:     aq.withTags.Clone(),
+		withUser:     aq.withUser.Clone(),
 		// clone intermediate query.
 		sql:  aq.sql.Clone(),
 		path: aq.path,
@@ -326,6 +352,17 @@ func (aq *ArticleQuery) WithTags(opts ...func(*TagQuery)) *ArticleQuery {
 		opt(query)
 	}
 	aq.withTags = query
+	return aq
+}
+
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *ArticleQuery) WithUser(opts ...func(*UserQuery)) *ArticleQuery {
+	query := (&UserClient{config: aq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withUser = query
 	return aq
 }
 
@@ -406,12 +443,20 @@ func (aq *ArticleQuery) prepareQuery(ctx context.Context) error {
 func (aq *ArticleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Article, error) {
 	var (
 		nodes       = []*Article{}
+		withFKs     = aq.withFKs
 		_spec       = aq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			aq.withComments != nil,
 			aq.withTags != nil,
+			aq.withUser != nil,
 		}
 	)
+	if aq.withUser != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, article.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Article).scanValues(nil, columns)
 	}
@@ -441,6 +486,12 @@ func (aq *ArticleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Arti
 		if err := aq.loadTags(ctx, query, nodes,
 			func(n *Article) { n.Edges.Tags = []*Tag{} },
 			func(n *Article, e *Tag) { n.Edges.Tags = append(n.Edges.Tags, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withUser; query != nil {
+		if err := aq.loadUser(ctx, query, nodes, nil,
+			func(n *Article, e *User) { n.Edges.User = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -535,6 +586,38 @@ func (aq *ArticleQuery) loadTags(ctx context.Context, query *TagQuery, nodes []*
 		}
 		for kn := range nodes {
 			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (aq *ArticleQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Article, init func(*Article), assign func(*Article, *User)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*Article)
+	for i := range nodes {
+		if nodes[i].user_articles == nil {
+			continue
+		}
+		fk := *nodes[i].user_articles
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_articles" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
 		}
 	}
 	return nil

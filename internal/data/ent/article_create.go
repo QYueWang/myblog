@@ -9,6 +9,7 @@ import (
 	"myblog/internal/data/ent/article"
 	"myblog/internal/data/ent/comment"
 	"myblog/internal/data/ent/tag"
+	"myblog/internal/data/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -110,6 +111,25 @@ func (ac *ArticleCreate) AddTags(t ...*Tag) *ArticleCreate {
 		ids[i] = t[i].ID
 	}
 	return ac.AddTagIDs(ids...)
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (ac *ArticleCreate) SetUserID(id int) *ArticleCreate {
+	ac.mutation.SetUserID(id)
+	return ac
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (ac *ArticleCreate) SetNillableUserID(id *int) *ArticleCreate {
+	if id != nil {
+		ac = ac.SetUserID(*id)
+	}
+	return ac
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (ac *ArticleCreate) SetUser(u *User) *ArticleCreate {
+	return ac.SetUserID(u.ID)
 }
 
 // Mutation returns the ArticleMutation object of the builder.
@@ -268,6 +288,23 @@ func (ac *ArticleCreate) createSpec() (*Article, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ac.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   article.UserTable,
+			Columns: []string{article.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_articles = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

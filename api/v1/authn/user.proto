@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package api.v1.user;
+
+option go_package = "myblog/api/v1/user;user";
+
+import "google/api/annotations.proto";
+
+service UserService {
+	rpc Login (LoginRequest) returns (LoginReply) {
+		option (google.api.http) = {
+			post: "/api/login"
+			body: "*"	
+		};
+	};
+	rpc CreateUser (CreateUserRequest) returns (CreateUserReply) {
+		option (google.api.http) = {
+			post: "/api/user"
+			body: "*"
+		};
+	};
+	rpc UpdateUser (UpdateUserRequest) returns (UpdateUserReply) {
+		option (google.api.http) = {
+			put: "/api/user/{account}"
+			body: "*"
+		};
+	};
+	rpc DeleteUser (DeleteUserRequest) returns (DeleteUserReply) {
+		option (google.api.http) = {
+			delete: "/api/user/{account}"
+		};
+	};
+	rpc GetUser (GetUserRequest) returns (GetUserReply) {
+		option (google.api.http) = {
+			get: "/api/user/{account}"
+		};
+	};
+	rpc ListUser (ListUserRequest) returns (ListUserReply) {
+		option (google.api.http) = {
+			get: "/api/users"
+		};
+	};
+}
+
+message LoginRequest {
+	string account = 1;
+	string password = 2;
+}
+
+message LoginReply {
+	string token = 1;
+}
+
+message User {
+	string account = 1;
+	string userName = 2;
+	string email = 3;
+}
+
+message CreateUserRequest {
+	string userName = 1;
+	string email = 2;
+	string password = 3;
+}
+message CreateUserReply {}
+
+message UpdateUserRequest {
+	string account = 1;
+	string userName = 2;
+	string email = 3;
+}
+message UpdateUserReply {}
+
+message DeleteUserRequest {
+	string account = 1;
+}
+message DeleteUserReply {}
+
+message GetUserRequest {
+	string account = 1;
+}
+message GetUserReply {
+	User user = 1;
+}
+
+message ListUserRequest {}
+message ListUserReply {
+	repeated User data = 1;
+}

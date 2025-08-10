@@ -7,6 +7,7 @@ import (
 	"myblog/internal/data/ent/comment"
 	"myblog/internal/data/ent/schema"
 	"myblog/internal/data/ent/tag"
+	"myblog/internal/data/ent/user"
 	"time"
 )
 
@@ -74,4 +75,18 @@ func init() {
 	tagDescDeleteAt := tagFields[4].Descriptor()
 	// tag.DefaultDeleteAt holds the default value on creation for the delete_at field.
 	tag.DefaultDeleteAt = tagDescDeleteAt.Default.(time.Time)
+	userFields := schema.User{}.Fields()
+	_ = userFields
+	// userDescCreateAt is the schema descriptor for create_at field.
+	userDescCreateAt := userFields[4].Descriptor()
+	// user.DefaultCreateAt holds the default value on creation for the create_at field.
+	user.DefaultCreateAt = userDescCreateAt.Default.(time.Time)
+	// userDescUpdateAt is the schema descriptor for update_at field.
+	userDescUpdateAt := userFields[5].Descriptor()
+	// user.DefaultUpdateAt holds the default value on creation for the update_at field.
+	user.DefaultUpdateAt = userDescUpdateAt.Default.(time.Time)
+	// userDescDeleteAt is the schema descriptor for delete_at field.
+	userDescDeleteAt := userFields[6].Descriptor()
+	// user.DefaultDeleteAt holds the default value on creation for the delete_at field.
+	user.DefaultDeleteAt = userDescDeleteAt.Default.(time.Time)
 }

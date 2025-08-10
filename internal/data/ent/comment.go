@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"myblog/internal/data/ent/article"
 	"myblog/internal/data/ent/comment"
+	"myblog/internal/data/ent/user"
 	"strings"
 	"time"
 
@@ -32,6 +33,7 @@ type Comment struct {
 	// The values are being populated by the CommentQuery when eager-loading is set.
 	Edges            CommentEdges `json:"edges"`
 	article_comments *string
+	user_comments    *int
 	selectValues     sql.SelectValues
 }
 
@@ -39,9 +41,11 @@ type Comment struct {
 type CommentEdges struct {
 	// Article holds the value of the article edge.
 	Article *Article `json:"article,omitempty"`
+	// User holds the value of the user edge.
+	User *User `json:"user,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // ArticleOrErr returns the Article value or an error if the edge
@@ -55,6 +59,17 @@ func (e CommentEdges) ArticleOrErr() (*Article, error) {
 	return nil, &NotLoadedError{edge: "article"}
 }
 
+// UserOrErr returns the User value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CommentEdges) UserOrErr() (*User, error) {
+	if e.User != nil {
+		return e.User, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: user.Label}
+	}
+	return nil, &NotLoadedError{edge: "user"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Comment) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -66,6 +81,8 @@ func (*Comment) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullTime)
 		case comment.ForeignKeys[0]: // article_comments
 			values[i] = new(sql.NullString)
+		case comment.ForeignKeys[1]: // user_comments
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -124,6 +141,13 @@ func (c *Comment) assignValues(columns []string, values []any) error {
 				c.article_comments = new(string)
 				*c.article_comments = value.String
 			}
+		case comment.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field user_comments", value)
+			} else if value.Valid {
+				c.user_comments = new(int)
+				*c.user_comments = int(value.Int64)
+			}
 		default:
 			c.selectValues.Set(columns[i], values[i])
 		}
@@ -140,6 +164,11 @@ func (c *Comment) Value(name string) (ent.Value, error) {
 // QueryArticle queries the "article" edge of the Comment entity.
 func (c *Comment) QueryArticle() *ArticleQuery {
 	return NewCommentClient(c.config).QueryArticle(c)
+}
+
+// QueryUser queries the "user" edge of the Comment entity.
+func (c *Comment) QueryUser() *UserQuery {
+	return NewCommentClient(c.config).QueryUser(c)
 }
 
 // Update returns a builder for updating this Comment.
